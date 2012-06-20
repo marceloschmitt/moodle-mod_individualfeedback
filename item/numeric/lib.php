@@ -282,7 +282,7 @@ class feedback_item_numeric extends feedback_item_base {
             }
             echo '</span>';
         echo '</div>';
-        
+
         //print the presentation
         echo '<div class="feedback_item_presentation_'.$align.$highlight.'">';
         echo '<span class="feedback_item_textfield">';
@@ -291,7 +291,7 @@ class feedback_item_numeric extends feedback_item_base {
         echo '</div>';
     }
 
-    /**     
+    /**
      * print the item at the complete-page of feedback
      *
      * @global object
@@ -416,11 +416,11 @@ class feedback_item_numeric extends feedback_item_base {
     function get_hasvalue() {
         return 1;
     }
-    
+
     function can_switch_require() {
         return true;
     }
-    
+
     function clean_input_value($value) {
         if (!is_numeric($value)) {
             return null;
