@@ -331,7 +331,7 @@ class feedback_item_captcha extends feedback_item_base {
         return PARAM_RAW;
     }
 
-    function clean_input_value($value) {
+    public function clean_input_value($value) {
         return clean_param($value, $this->value_type());
     }
 }

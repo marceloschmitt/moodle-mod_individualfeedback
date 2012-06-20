@@ -682,7 +682,7 @@ class feedback_item_multichoicerated extends feedback_item_base {
         return PARAM_INT;
     }
 
-    function clean_input_value($value) {
+    public function clean_input_value($value) {
         return clean_param($value, $this->value_type());
     }
 }

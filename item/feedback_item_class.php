@@ -41,11 +41,14 @@ abstract class feedback_item_base {
         return false;
     }
 
+    public function value_type() {
+        return PARAM_RAW;
+    }
+
     public function value_is_array() {
         return false;
     }
 
-    abstract public function value_type();
     abstract public function init();
     abstract public function build_editform($item, $feedback, $cm);
     abstract public function save_item();
@@ -95,7 +98,7 @@ abstract class feedback_item_base {
      */
     abstract public function get_analysed($item, $groupid = false, $courseid = false);
 
-    /**     
+    /**
      * print the item at the edit-page of feedback
      *
      * @global object
@@ -104,7 +107,7 @@ abstract class feedback_item_base {
      */
     abstract public function print_item_preview($item);
 
-    /**     
+    /**
      * print the item at the complete-page of feedback
      *
      * @global object
@@ -115,7 +118,7 @@ abstract class feedback_item_base {
      */
     abstract public function print_item_complete($item, $value = '', $highlightrequire = false);
 
-    /**     
+    /**
      * print the item at the complete-page of feedback
      *
      * @global object
@@ -125,13 +128,13 @@ abstract class feedback_item_base {
      */
     abstract public function print_item_show_value($item, $value = '');
 
-    /**     
+    /**
      * cleans the userinput while submitting the form
      *
      * @param mixed $value
      * @return mixed
      */
-    abstract function clean_input_value($value);
+    abstract public function clean_input_value($value);
 
 }
 

@@ -338,7 +338,7 @@ class feedback_item_textarea extends feedback_item_base {
         return PARAM_RAW;
     }
 
-    function clean_input_value($value) {
+    public function clean_input_value($value) {
         return s($value);
     }
 }
