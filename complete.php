@@ -241,7 +241,7 @@
                 $tracking->completed = $new_completed_id;
                 $DB->insert_record('feedback_tracking', $tracking);
                 unset($SESSION->feedback->is_started);
-                
+
                 // Update completion state
                 $completion = new completion_info($course);
                 if ($completion->is_enabled($cm) && $feedback->completionsubmit) {
