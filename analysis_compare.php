@@ -26,8 +26,7 @@ require_once("../../config.php");
 require_once("lib.php");
 
 $id = required_param('id', PARAM_INT);  // Course module id.
-$currentsubtab = optional_param('subtab', 'detail_questions', PARAM_TEXT);
-$url = new moodle_url('/mod/individualfeedback/analysis.php', array('id'=>$id, 'subtab' => $currentsubtab));
+$url = new moodle_url('/mod/individualfeedback/analysis_compare.php', array('id'=>$id));
 $PAGE->set_url($url);
 
 list($course, $cm) = get_course_and_cm_from_cmid($id, 'individualfeedback');
@@ -68,7 +67,7 @@ groups_print_activity_menu($cm, $url);
 if (has_capability('mod/feedback:viewreports', $context) && $feedbackstructure->get_items()) {
     echo $OUTPUT->container_start('form-buttons');
     $aurl = new moodle_url('/mod/individualfeedback/analysis_to_excel.php', ['sesskey' => sesskey(), 'id' => $id]);
-    echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
+  //  echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
     echo $OUTPUT->container_end();
 }
 
@@ -87,20 +86,6 @@ if ($mygroupid > 0 AND $feedback->anonymous == FEEDBACK_ANONYMOUS_YES) {
     }
 }
 
-/* If other reports will be used, uncomment this section.
-echo html_writer::start_tag('div', array('class' => 'subtabs_placeholder'));
-require('tabs_evaluations.php');
-echo html_writer::end_tag('div');
-
-// Get the file based on the selected subtab.
-if (!file_exists($CFG->dirroot . "/mod/individualfeedback/" . $currentsubtab . ".php")) {
-    throw new \moodle_exception('error_subtab', 'individualfeedback');
-} else {
-    require($currentsubtab . ".php");
-}
-*/
-
-// If other reports will be implemented, delete next code section.
 echo '<div>';
 if ($check_anonymously) {
     // Print the items in an analysed form.
@@ -115,6 +100,5 @@ if ($check_anonymously) {
         'feedback', '', '', 3);
 }
 echo '</div>';
-// End of section.
 
 echo $OUTPUT->footer();

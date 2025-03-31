@@ -44,7 +44,7 @@ if (!isset($currentsubtab)) {
 }
 
 $urlparams = ['id' => $usedid];
-if ($individualfeedback->course == SITEID && $courseid) {
+if ($feedback->course == SITEID && $courseid) {
     $urlparams['courseid'] = $courseid;
 }
 
@@ -52,7 +52,7 @@ if (has_capability('mod/individualfeedback:viewreports', $context)) {
     $subtabs = array('detail_questions', 'detail_groups', 'overview_questions', 'overview_groups');
 
     // Check if the individual feedback activity is linked to other activities.
-    if (individualfeedback_get_linkedid($individualfeedback->id)) {
+    if (individualfeedback_get_linkedid($feedback->id)) {
         $subtabs[] = 'comparison_questions';
         $subtabs[] = 'comparison_groups';
     }

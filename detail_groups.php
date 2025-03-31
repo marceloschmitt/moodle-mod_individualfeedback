@@ -24,16 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Button "Export to excel".
-if (has_capability('mod/individualfeedback:viewreports', $context) && $individualfeedbackstructure->get_items()) {
-    echo $OUTPUT->container_start('form-buttons');
-    $aurl = new moodle_url('/mod/individualfeedback/detail_groups_to_excel.php', ['sesskey' => sesskey(), 'id' => $id]);
-    echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'individualfeedback'));
-    echo $OUTPUT->container_end();
-}
-
 // Get the items of the individualfeedback.
-$items = $individualfeedbackstructure->get_groups_and_items();
+$items = $feedbackstructure->get_groups_and_items();
 
 $groups = array();
 foreach ($items as $item) {
@@ -61,7 +53,7 @@ echo html_writer::start_tag('div', array('class' => 'clear'));
 foreach ($items as $item) {
     $itemobj = individualfeedback_get_item_class($item->typ);
     if (method_exists($itemobj, 'print_detail_groups')) {
-        $printnr = ($individualfeedback->autonumbering && $item->itemnr) ? ($item->itemnr . '.') : '';
+        $printnr = ($feedback->autonumbering && $item->itemnr) ? ($item->itemnr . '.') : '';
         $itemobj->print_detail_groups($item, $printnr);
     }
 }

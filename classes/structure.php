@@ -50,6 +50,8 @@ class mod_individualfeedback_structure extends mod_feedback_structure {
     /** @var int */
     protected $userid;
 
+    protected $groupeditems;
+
     /**
      * Constructor
      *

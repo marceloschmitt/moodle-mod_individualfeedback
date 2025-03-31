@@ -1048,7 +1048,7 @@ class individualfeedback_item_questiongroup extends individualfeedback_item_base
         list($where, $qparams) = $DB->get_in_or_equal($qtypes, SQL_PARAMS_NAMED);
         $sql = "SELECT *
         FROM {individualfeedback_item}
-        WHERE individualfeedback = :individualfeedback
+        WHERE feedback = :feedback
         AND typ {$where}
         AND position > :startposition
         AND position <

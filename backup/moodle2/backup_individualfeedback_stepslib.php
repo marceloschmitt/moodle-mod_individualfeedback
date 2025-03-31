@@ -99,14 +99,14 @@ class backup_individualfeedback_activity_structure_step extends backup_activity_
         // Define sources
         $individualfeedback->set_source_table('individualfeedback', array('id' => backup::VAR_ACTIVITYID));
 
-        $item->set_source_table('individualfeedback_item', array('individualfeedback' => backup::VAR_PARENTID));
+        $item->set_source_table('individualfeedback_item', array('feedback' => backup::VAR_PARENTID));
 
         // All these source definitions only happen if we are including user info
         if ($userinfo) {
             $completed->set_source_sql('
                 SELECT *
                   FROM {individualfeedback_completed}
-                 WHERE individualfeedback = ?',
+                 WHERE feedback = ?',
                 array(backup::VAR_PARENTID));
 
             $value->set_source_table('individualfeedback_value', array('completed' => backup::VAR_PARENTID));
