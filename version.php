@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025033001;       // The current module version (Baseversion Date: 2020070900)
+$plugin->version   = 2025040101;       // The current module version (Baseversion Date: 2020070900)
 $plugin->requires  = 2017050500;    // Requires this Moodle version
 $plugin->component = 'mod_individualfeedback';   // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_ALPHA;

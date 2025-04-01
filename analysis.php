@@ -42,6 +42,8 @@ if (!$feedbackstructure->can_view_analysis()) {
     throw new \moodle_exception('error');
 }
 
+$actionbar = new \mod_individualfeedback\output\compare_action_bar($cm->id, $url); // Verificar.
+
 /// Print the page header.
 
 $PAGE->set_heading($course->fullname);
@@ -59,6 +61,8 @@ $PAGE->activityheader->set_attrs([
 $PAGE->add_body_class('limitedwidth');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('analysis', 'mod_feedback'), 3);
+echo $renderer->main_action_bar($actionbar);
+
 
 //get the groupid
 $mygroupid = groups_get_activity_group($cm, true);
@@ -102,6 +106,7 @@ if (!file_exists($CFG->dirroot . "/mod/individualfeedback/" . $currentsubtab . "
 
 // If other reports will be implemented, delete next code section.
 echo '<div>';
+
 if ($check_anonymously) {
     // Print the items in an analysed form.
     foreach ($items as $item) {
