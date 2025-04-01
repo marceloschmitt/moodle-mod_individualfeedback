@@ -37,9 +37,7 @@ class restore_individualfeedback_activity_structure_step extends restore_activit
 
         $paths[] = new restore_path_element('individualfeedback', '/activity/individualfeedback');
         $paths[] = new restore_path_element('individualfeedback_item', '/activity/individualfeedback/items/item');
-
-        // Restore of userinfo for this module is only supported on the same site.
-        if ($userinfo && $this->task->is_samesite()) {
+        if ($userinfo) {
             $paths[] = new restore_path_element('individualfeedback_completed', '/activity/individualfeedback/completeds/completed');
             $paths[] = new restore_path_element('individualfeedback_value', '/activity/individualfeedback/completeds/completed/values/value');
         }
@@ -59,8 +57,7 @@ class restore_individualfeedback_activity_structure_step extends restore_activit
         // See MDL-9367.
         $data->timeopen = $this->apply_date_offset($data->timeopen);
         $data->timeclose = $this->apply_date_offset($data->timeclose);
-        $data->timemodified = $this->apply_date_offset($data->timemodified);
-
+        //$data->timemodified = $this->apply_date_offset($data->timemodified);
         // insert the individualfeedback record
         $newitemid = $DB->insert_record('individualfeedback', $data);
         // immediately after inserting "activity" record, call this
@@ -72,11 +69,9 @@ class restore_individualfeedback_activity_structure_step extends restore_activit
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->individualfeedback = $this->get_new_parentid('individualfeedback');
-
-        //dependitem
-        $data->dependitem = $this->get_mappingid('individualfeedback_item', $data->dependitem);
-
+        $data->feedback = $this->get_new_parentid('individualfeedback');
+        $data->typ = clean_param($data->typ, PARAM_ALPHA);
+        //$data->dependitem = $this->get_mappingid('individualfeedback_item', $data->dependitem);
         $newitemid = $DB->insert_record('individualfeedback_item', $data);
         $this->set_mapping('individualfeedback_item', $oldid, $newitemid, true); // Can have files
     }
@@ -86,10 +81,8 @@ class restore_individualfeedback_activity_structure_step extends restore_activit
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->individualfeedback = $this->get_new_parentid('individualfeedback');
-        // We are not able to map userids here, because we haven't annotated them during backup.
-        // $data->userid = $this->get_mappingid('user', $data->userid);
-        $data->timemodified = $this->apply_date_offset($data->timemodified);
+        $data->feedback = $this->get_new_parentid('individualfeedback');
+        $data->userid = $this->get_mappingid('user', $data->userid);
         if ($this->task->is_samesite() && !empty($data->courseid)) {
             $data->courseid = $data->courseid;
         } else if ($this->get_courseid() == SITEID) {
@@ -124,16 +117,16 @@ class restore_individualfeedback_activity_structure_step extends restore_activit
     protected function after_execute() {
         global $DB;
         // Add feedback related files, no need to match by itemname (just internally handled context)
-        $this->add_related_files('mod_feedback', 'intro', null);
-        $this->add_related_files('mod_feedback', 'page_after_submit', null);
-        $this->add_related_files('mod_feedback', 'item', 'feedback_item');
+        $this->add_related_files('mod_individualfeedback', 'intro', null);
+        $this->add_related_files('mod_individualfeedback', 'page_after_submit', null);
+        $this->add_related_files('mod_individualfeedback', 'item', 'individualfeedback_item');
 
         // Once all items are restored we can set their dependency.
-        if ($records = $DB->get_records('feedback_item', array('feedback' => $this->task->get_activityid()))) {
+        if ($records = $DB->get_records('individualfeedback_item', array('feedback' => $this->task->get_activityid()))) {
             foreach ($records as $record) {
                 // Get new id for dependitem if present. This will also reset dependitem if not found.
-                $record->dependitem = $this->get_mappingid('feedback_item', $record->dependitem);
-                $DB->update_record('feedback_item', $record);
+                $record->dependitem = $this->get_mappingid('individualfeedback_item', $record->dependitem);
+                $DB->update_record('individualfeedback_item', $record);
             }
         }
     }

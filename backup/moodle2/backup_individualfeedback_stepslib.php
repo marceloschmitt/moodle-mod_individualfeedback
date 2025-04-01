@@ -36,7 +36,7 @@ class backup_individualfeedback_activity_structure_step extends backup_activity_
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated
-        $individualfeedback = new backup_nested_element('individualfeedback', array('id'), array(
+        $feedback = new backup_nested_element('individualfeedback', array('id'), array(
                                                 'name',
                                                 'intro',
                                                 'introformat',
@@ -87,17 +87,17 @@ class backup_individualfeedback_activity_structure_step extends backup_activity_
                                                 'course_id'));
 
         // Build the tree
-        $individualfeedback->add_child($items);
+        $feedback->add_child($items);
         $items->add_child($item);
 
-        $individualfeedback->add_child($completeds);
+        $feedback->add_child($completeds);
         $completeds->add_child($completed);
 
         $completed->add_child($values);
         $values->add_child($value);
 
         // Define sources
-        $individualfeedback->set_source_table('individualfeedback', array('id' => backup::VAR_ACTIVITYID));
+        $feedback->set_source_table('individualfeedback', array('id' => backup::VAR_ACTIVITYID));
 
         $item->set_source_table('individualfeedback_item', array('feedback' => backup::VAR_PARENTID));
 
@@ -114,18 +114,17 @@ class backup_individualfeedback_activity_structure_step extends backup_activity_
 
         // Define id annotations
 
-        // We do not want to annotate userids, because of anonymous userid-hashes in {individualfeedback_completion}
-        // $completed->annotate_ids('user', 'userid');
+        $completed->annotate_ids('user', 'userid');
 
         // Define file annotations
 
-        $individualfeedback->annotate_files('mod_individualfeedback', 'intro', null); // This file area hasn't itemid
-        $individualfeedback->annotate_files('mod_individualfeedback', 'page_after_submit', null); // This file area hasn't itemid
+        $feedback->annotate_files('mod_individualfeedback', 'intro', null); // This file area hasn't itemid
+        $feedback->annotate_files('mod_individualfeedback', 'page_after_submit', null); // This file area hasn't itemid
 
         $item->annotate_files('mod_individualfeedback', 'item', 'id');
 
         // Return the root element (individualfeedback), wrapped into standard activity structure
-        return $this->prepare_activity_structure($individualfeedback);
+        return $this->prepare_activity_structure($feedback);
     }
 
 }

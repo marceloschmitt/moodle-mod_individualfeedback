@@ -26,20 +26,16 @@ require_once("../../config.php");
 require_once("lib.php");
 
 $id = required_param('id', PARAM_INT);  // Course module id.
+$id_compare = required_param('id_compare', PARAM_INT);  // Course module id_comare.
 $url = new moodle_url('/mod/individualfeedback/analysis_compare.php', array('id'=>$id));
 $PAGE->set_url($url);
 
 list($course, $cm) = get_course_and_cm_from_cmid($id, 'individualfeedback');
 require_course_login($course, true, $cm);
+list($course_compare, $cm_compare) = get_course_and_cm_from_cmid($id_compare, 'individualfeedback');
+$activityrecord = $DB->get_record('individualfeedback', ['id' => $cm_compare->instance]);
 
 $feedback = $PAGE->activityrecord;
-$feedbackstructure = new mod_individualfeedback_structure($feedback, $cm);
-
-$context = context_module::instance($cm->id);
-
-if (!$feedbackstructure->can_view_analysis()) {
-    throw new \moodle_exception('error');
-}
 
 /// Print the page header.
 
@@ -56,49 +52,65 @@ $PAGE->activityheader->set_attrs([
     'description' => ''
 ]);
 $PAGE->add_body_class('limitedwidth');
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('analysis', 'mod_feedback'), 3);
 
-//get the groupid
-$mygroupid = groups_get_activity_group($cm, true);
-groups_print_activity_menu($cm, $url);
+echo '<TABLE BORDER="2" CELLPADDING="10">';
+echo '<TR>';
+echo '<TD>';
+analysis_compare($PAGE->activityrecord,$cm, $id, $url);
+echo '</TD>';
+echo '<TD>';
+analysis_compare($activityrecord,$cm_compare, $id_compare, $url);
+echo '</TD>';
+echo '</TR>';
+echo '</TABLE>';
 
-// Button "Export to excel".
-if (has_capability('mod/feedback:viewreports', $context) && $feedbackstructure->get_items()) {
-    echo $OUTPUT->container_start('form-buttons');
-    $aurl = new moodle_url('/mod/individualfeedback/analysis_to_excel.php', ['sesskey' => sesskey(), 'id' => $id]);
-  //  echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
-    echo $OUTPUT->container_end();
-}
-
-// Show the summary.
-$summary = new mod_individualfeedback\output\summary($feedbackstructure, $mygroupid);
-echo $OUTPUT->render_from_template('mod_feedback/summary', $summary->export_for_template($OUTPUT));
-
-// Get the items of the feedback.
-$items = $feedbackstructure->get_items(true);
-
-$check_anonymously = true;
-if ($mygroupid > 0 AND $feedback->anonymous == FEEDBACK_ANONYMOUS_YES) {
-    $completedcount = $feedbackstructure->count_completed_responses($mygroupid);
-    if ($completedcount < FEEDBACK_MIN_ANONYMOUS_COUNT_IN_GROUP) {
-        $check_anonymously = false;
-    }
-}
-
-echo '<div>';
-if ($check_anonymously) {
-    // Print the items in an analysed form.
-    foreach ($items as $item) {
-        $itemobj = individualfeedback_get_item_class($item->typ);
-        $printnr = ($feedback->autonumbering && $item->itemnr) ? ($item->itemnr . '.') : '';
-        $itemobj->print_analysed($item, $printnr, $mygroupid);
-    }
-} else {
-    echo $OUTPUT->heading_with_help(get_string('insufficient_responses_for_this_group', 'feedback'),
-        'insufficient_responses',
-        'feedback', '', '', 3);
-}
-echo '</div>';
 
 echo $OUTPUT->footer();
+
+function analysis_compare($feedback, $cm, $id, $url) {
+    global $OUTPUT;
+    echo $feedback->name;
+    $feedbackstructure = new mod_individualfeedback_structure($feedback, $cm);
+
+    $context = context_module::instance($cm->id);
+
+    if (!$feedbackstructure->can_view_analysis()) {
+        throw new \moodle_exception('error');
+    }
+
+    //get the groupid
+    $mygroupid = groups_get_activity_group($cm, true);
+    groups_print_activity_menu($cm, $url);
+
+    // Show the summary.
+    $summary = new mod_individualfeedback\output\summary($feedbackstructure, $mygroupid);
+    echo $OUTPUT->render_from_template('mod_feedback/summary', $summary->export_for_template($OUTPUT));
+
+    // Get the items of the feedback.
+    $items = $feedbackstructure->get_items(true);
+
+    $check_anonymously = true;
+    if ($mygroupid > 0 and $feedback->anonymous == FEEDBACK_ANONYMOUS_YES) {
+        $completedcount = $feedbackstructure->count_completed_responses($mygroupid);
+        if ($completedcount < FEEDBACK_MIN_ANONYMOUS_COUNT_IN_GROUP) {
+            $check_anonymously = false;
+        }
+    }
+
+    if ($check_anonymously) {
+        // Print the items in an analysed form.
+        foreach ($items as $item) {
+            $itemobj = individualfeedback_get_item_class($item->typ);
+            $printnr = ($feedback->autonumbering && $item->itemnr) ? ($item->itemnr . '.') : '';
+            $itemobj->print_analysed($item, $printnr, $mygroupid);
+        }
+    } else {
+        echo $OUTPUT->heading_with_help(get_string('insufficient_responses_for_this_group', 'feedback'),
+            'insufficient_responses',
+            'feedback', '', '', 3);
+    }
+}
+
