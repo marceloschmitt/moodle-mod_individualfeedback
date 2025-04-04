@@ -119,6 +119,10 @@ if ($check_anonymously) {
         'insufficient_responses',
         'feedback', '', '', 3);
 }
+if(str_contains($item->options, 'h')) {
+    echo "* " . get_string('negative_formulated', 'individualfeedback');
+}
+
 echo '</div>';
 // End of section.
 
